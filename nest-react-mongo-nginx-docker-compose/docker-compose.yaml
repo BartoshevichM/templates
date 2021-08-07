@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  #frontend
+  client:
+    container_name: client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - .client:/usr/src/client
+    ports:
+      - "80:80"
+      - "443:443"
+
+  # backend
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - .api:/usr/src/app
+    ports:
+      - "8989:8989"
+    depends_on:
+      - mongo_db
+
+  # db
+  mongo_db:
+    restart: always
+    container_name: mongodb
+    image: mongo
+    volumes:
+      - ./db:/data/db
+    ports:
+      - "27017:27017"
