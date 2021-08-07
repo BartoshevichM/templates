@@ -1,17 +1,15 @@
 version: "3"
 
 services:
-  #frontend
-  client:
-    container_name: client
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+  # db
+  mongo_db:
+    restart: always
+    container_name: mongodb
+    image: mongo
     volumes:
-      - .client:/usr/src/client
+      - ./db:/data/db
     ports:
-      - "80:80"
-      - "443:443"
+      - "27017:27017"
 
   # backend
   api:
@@ -25,13 +23,17 @@ services:
       - "8989:8989"
     depends_on:
       - mongo_db
+    environment:
+      - MONGO_URL=mongodb://mongo_db
 
-  # db
-  mongo_db:
-    restart: always
-    container_name: mongodb
-    image: mongo
+  #frontend
+  client:
+    container_name: client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
     volumes:
-      - ./db:/data/db
+      - .client:/usr/src/client
     ports:
-      - "27017:27017"
+      - "80:80"
+      - "443:443"
